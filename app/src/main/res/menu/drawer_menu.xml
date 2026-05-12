@@ -4,12 +4,12 @@
         android:id="@+id/nav_settings"
         android:title="Settings" />
     <item
+        android:id="@+id/nav_export"
+        android:title="Export Messages" />
+    <item
         android:id="@+id/nav_help"
         android:title="Help" />
     <item
         android:id="@+id/nav_about"
         android:title="About" />
-    <item
-        android:id="@+id/nav_export"
-        android:title="Export Messages" />
 </menu>
