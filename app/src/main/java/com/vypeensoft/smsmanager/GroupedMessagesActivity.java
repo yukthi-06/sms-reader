@@ -283,7 +283,11 @@ public class GroupedMessagesActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(smsRefreshReceiver, new android.content.IntentFilter("com.vypeensoft.smsmanager.REFRESH_SMS"));
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(smsRefreshReceiver, new android.content.IntentFilter("com.vypeensoft.smsmanager.REFRESH_SMS"), android.content.Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(smsRefreshReceiver, new android.content.IntentFilter("com.vypeensoft.smsmanager.REFRESH_SMS"));
+        }
         loadGroupedMessages();
     }
 
