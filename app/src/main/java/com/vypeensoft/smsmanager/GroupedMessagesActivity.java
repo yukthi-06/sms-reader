@@ -16,6 +16,14 @@ public class GroupedMessagesActivity extends AppCompatActivity {
     private SmsAdapter adapter;
     private String groupKey;
     private ActionMode actionMode;
+    private String senderNumber;
+    private List<SmsModel> groupedSmsList = new ArrayList<>();
+    private final android.content.BroadcastReceiver smsRefreshReceiver = new android.content.BroadcastReceiver() {
+        @Override
+        public void onReceive(android.content.Context context, android.content.Intent intent) {
+            loadGroupedMessages();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +32,7 @@ public class GroupedMessagesActivity extends AppCompatActivity {
         
         String groupDisplayName = getIntent().getStringExtra("group_display_name");
         groupKey = getIntent().getStringExtra("group_key");
+        senderNumber = getIntent().getStringExtra("sender_number");
         setTitle(groupDisplayName != null ? groupDisplayName : "Messages");
 
         if (getSupportActionBar() != null) {
@@ -83,6 +92,53 @@ public class GroupedMessagesActivity extends AppCompatActivity {
         adapter.setHideSender(true);
         rvGroupedSmsList.setAdapter(adapter);
         
+        android.widget.EditText etReplyMessage = findViewById(R.id.etReplyMessage);
+        android.widget.ImageButton btnSendReply = findViewById(R.id.btnSendReply);
+        
+        btnSendReply.setOnClickListener(v -> {
+            String message = etReplyMessage.getText().toString().trim();
+            if (message.isEmpty()) {
+                return;
+            }
+            
+            String recipient = senderNumber;
+            if (recipient == null || recipient.isEmpty()) {
+                if (groupedSmsList != null && !groupedSmsList.isEmpty()) {
+                    for (SmsModel sms : groupedSmsList) {
+                        if (!sms.isSent() && sms.getSender() != null && !sms.getSender().isEmpty()) {
+                            recipient = sms.getSender();
+                            break;
+                        }
+                    }
+                    if (recipient == null || recipient.isEmpty()) {
+                        recipient = groupedSmsList.get(0).getSender();
+                    }
+                }
+            }
+            
+            if (recipient == null || recipient.isEmpty()) {
+                android.widget.Toast.makeText(this, "Could not determine recipient", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            final String finalRecipient = recipient;
+            btnSendReply.setEnabled(false);
+            
+            SmsRepository.sendSms(this, finalRecipient, message, () -> {
+                runOnUiThread(() -> {
+                    btnSendReply.setEnabled(true);
+                    etReplyMessage.setText("");
+                    android.widget.Toast.makeText(this, "Message sent", android.widget.Toast.LENGTH_SHORT).show();
+                    loadGroupedMessages();
+                });
+            }, () -> {
+                runOnUiThread(() -> {
+                    btnSendReply.setEnabled(true);
+                    android.widget.Toast.makeText(this, "Failed to send message", android.widget.Toast.LENGTH_SHORT).show();
+                });
+            });
+        });
+
         loadGroupedMessages();
     }
 
@@ -195,7 +251,22 @@ public class GroupedMessagesActivity extends AppCompatActivity {
                 }
             }
             runOnUiThread(() -> {
+                this.groupedSmsList = filtered;
                 adapter.updateList(filtered);
+                if (filtered != null && !filtered.isEmpty()) {
+                    if (senderNumber == null || senderNumber.isEmpty()) {
+                        for (SmsModel sms : filtered) {
+                            if (!sms.isSent() && sms.getSender() != null && !sms.getSender().isEmpty()) {
+                                senderNumber = sms.getSender();
+                                break;
+                            }
+                        }
+                        if (senderNumber == null || senderNumber.isEmpty()) {
+                            senderNumber = filtered.get(0).getSender();
+                        }
+                    }
+                    rvGroupedSmsList.scrollToPosition(filtered.size() - 1);
+                }
             });
         });
     }
@@ -212,6 +283,17 @@ public class GroupedMessagesActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        registerReceiver(smsRefreshReceiver, new android.content.IntentFilter("com.vypeensoft.smsmanager.REFRESH_SMS"));
         loadGroupedMessages();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            unregisterReceiver(smsRefreshReceiver);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

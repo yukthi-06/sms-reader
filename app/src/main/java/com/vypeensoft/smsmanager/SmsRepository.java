@@ -235,4 +235,70 @@ public class SmsRepository {
         if (str == null) return "";
         return str.replace("\"", "\"\"");
     }
+
+    public static void sendSms(Context context, String recipient, String message, Runnable onSuccess, Runnable onFailure) {
+        new Thread(() -> {
+            try {
+                android.telephony.SmsManager smsManager;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                    smsManager = context.getSystemService(android.telephony.SmsManager.class);
+                } else {
+                    smsManager = android.telephony.SmsManager.getDefault();
+                }
+
+                if (smsManager == null) {
+                    smsManager = android.telephony.SmsManager.getDefault();
+                }
+
+                ArrayList<String> parts = smsManager.divideMessage(message);
+                if (parts.size() > 1) {
+                    smsManager.sendMultipartTextMessage(recipient, null, parts, null, null);
+                } else {
+                    smsManager.sendTextMessage(recipient, null, message, null, null);
+                }
+
+                // Manually save the sent SMS to content://sms/sent
+                saveSmsToSent(context, recipient, message);
+
+                if (onSuccess != null) {
+                    onSuccess.run();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (onFailure != null) {
+                    onFailure.run();
+                }
+            }
+        }).start();
+    }
+
+    public static void saveSmsToSent(Context context, String recipient, String message) {
+        clearCache(); // Invalidate cache
+        try {
+            ContentValues values = new ContentValues();
+            values.put("address", recipient);
+            values.put("body", message);
+            values.put("date", System.currentTimeMillis());
+            values.put("read", 1); // Sent is read
+            values.put("type", 2); // 2 is sent
+            context.getContentResolver().insert(Uri.parse("content://sms/sent"), values);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void saveSmsToInbox(Context context, String sender, String message, long timestamp) {
+        clearCache(); // Invalidate cache
+        try {
+            ContentValues values = new ContentValues();
+            values.put("address", sender);
+            values.put("body", message);
+            values.put("date", timestamp);
+            values.put("read", 0); // Unread
+            values.put("type", 1); // 1 is inbox
+            context.getContentResolver().insert(Uri.parse("content://sms/inbox"), values);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

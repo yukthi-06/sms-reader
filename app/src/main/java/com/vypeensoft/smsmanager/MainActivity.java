@@ -33,6 +33,13 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_READ_SMS = 101;
 
+    private final android.content.BroadcastReceiver smsRefreshReceiver = new android.content.BroadcastReceiver() {
+        @Override
+        public void onReceive(android.content.Context context, android.content.Intent intent) {
+            loadSms();
+        }
+    };
+
     private RecyclerView rvSmsList;
     private SmsAdapter smsAdapter;
     private List<SmsModel> allSmsList = new ArrayList<>();
@@ -90,11 +97,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        registerReceiver(smsRefreshReceiver, new android.content.IntentFilter("com.vypeensoft.smsmanager.REFRESH_SMS"));
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED &&
             ContextCompat.checkSelfPermission(this, "android.permission.WRITE_SMS") == PackageManager.PERMISSION_GRANTED) {
             loadSms();
         } else {
             updateVisibility();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            unregisterReceiver(smsRefreshReceiver);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -115,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, GroupedMessagesActivity.class);
                     intent.putExtra("group_key", getGroupKey(sms));
                     intent.putExtra("group_display_name", sms.getContactName() != null ? sms.getContactName() : extractSenderName(sms.getSender()));
+                    intent.putExtra("sender_number", sms.getSender());
                     intent.putExtra("search_query", etSearch.getText().toString().toLowerCase().trim());
                     startActivity(intent);
                 } else {
@@ -182,9 +201,13 @@ public class MainActivity extends AppCompatActivity {
 
         btnRequestPermission.setOnClickListener(v -> {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, "android.permission.WRITE_SMS") != PackageManager.PERMISSION_GRANTED) {
+                ContextCompat.checkSelfPermission(this, "android.permission.WRITE_SMS") != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
                 if ((!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_SMS) ||
-                     !ActivityCompat.shouldShowRequestPermissionRationale(this, "android.permission.WRITE_SMS")) &&
+                     !ActivityCompat.shouldShowRequestPermissionRationale(this, "android.permission.WRITE_SMS") ||
+                     !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS) ||
+                     !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CONTACTS)) &&
                         getSharedPreferences("prefs", MODE_PRIVATE).getBoolean("permission_requested", false)) {
                     // Open Settings
                     Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -196,11 +219,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        findViewById(R.id.fabCompose).setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, ComposeSmsActivity.class));
+        });
     }
 
     private void checkPermissions() {
         boolean hasReadSms = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED;
         boolean hasWriteSms = ContextCompat.checkSelfPermission(this, "android.permission.WRITE_SMS") == PackageManager.PERMISSION_GRANTED;
+        boolean hasSendSms = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED;
         boolean hasReadContacts = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED;
         boolean hasStorage = true;
 
@@ -210,12 +238,13 @@ public class MainActivity extends AppCompatActivity {
             hasStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
         }
 
-        if (!hasReadSms || !hasWriteSms || !hasStorage) {
+        if (!hasReadSms || !hasWriteSms || !hasSendSms || !hasReadContacts || !hasStorage) {
             getSharedPreferences("prefs", MODE_PRIVATE).edit().putBoolean("permission_requested", true).apply();
             
             List<String> permissions = new ArrayList<>();
             if (!hasReadSms) permissions.add(Manifest.permission.READ_SMS);
             if (!hasWriteSms) permissions.add("android.permission.WRITE_SMS");
+            if (!hasSendSms) permissions.add(Manifest.permission.SEND_SMS);
             if (!hasReadContacts) permissions.add(Manifest.permission.READ_CONTACTS);
             
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
