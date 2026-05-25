@@ -289,10 +289,10 @@ public class GroupedMessagesActivity extends AppCompatActivity {
         if (toggleItem != null) {
             if (adapter.isExpandedAll()) {
                 toggleItem.setTitle("Collapse All");
-                toggleItem.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+                toggleItem.setIcon(android.R.drawable.arrow_up_float);
             } else {
                 toggleItem.setTitle("Expand All");
-                toggleItem.setIcon(android.R.drawable.ic_menu_slideshow);
+                toggleItem.setIcon(android.R.drawable.arrow_down_float);
             }
         }
         return true;
