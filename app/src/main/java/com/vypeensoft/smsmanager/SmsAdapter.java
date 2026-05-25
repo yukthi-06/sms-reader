@@ -23,6 +23,7 @@ public class SmsAdapter extends RecyclerView.Adapter<SmsAdapter.SmsViewHolder> {
     private boolean hideSender = false;
     private java.util.Set<String> selectedIds = new java.util.HashSet<>();
     private boolean isSelectionMode = false;
+    private boolean isExpandedAll = false;
 
     public SmsAdapter(List<SmsModel> smsList, OnItemClickListener listener) {
         this.smsList = smsList;
@@ -39,6 +40,15 @@ public class SmsAdapter extends RecyclerView.Adapter<SmsAdapter.SmsViewHolder> {
 
     public boolean isSelectionMode() {
         return isSelectionMode;
+    }
+
+    public void setExpandedAll(boolean expandedAll) {
+        this.isExpandedAll = expandedAll;
+        notifyDataSetChanged();
+    }
+
+    public boolean isExpandedAll() {
+        return isExpandedAll;
     }
 
     public void toggleSelection(String id) {
@@ -128,6 +138,14 @@ public class SmsAdapter extends RecyclerView.Adapter<SmsAdapter.SmsViewHolder> {
         
         holder.tvTimestamp.setText(sms.getTimestamp());
         holder.tvBody.setText(sms.getBody());
+        
+        if (isExpandedAll) {
+            holder.tvBody.setMaxLines(Integer.MAX_VALUE);
+            holder.tvBody.setEllipsize(null);
+        } else {
+            holder.tvBody.setMaxLines(3);
+            holder.tvBody.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        }
         
         int fontSize = SettingsManager.getFontSize(holder.itemView.getContext());
         holder.tvSender.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, fontSize);

@@ -283,9 +283,29 @@ public class GroupedMessagesActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_grouped_messages, menu);
+        MenuItem toggleItem = menu.findItem(R.id.action_toggle_expand);
+        if (toggleItem != null) {
+            if (adapter.isExpandedAll()) {
+                toggleItem.setTitle("Collapse All");
+                toggleItem.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+            } else {
+                toggleItem.setTitle("Expand All");
+                toggleItem.setIcon(android.R.drawable.ic_menu_slideshow);
+            }
+        }
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
+            return true;
+        } else if (item.getItemId() == R.id.action_toggle_expand) {
+            adapter.setExpandedAll(!adapter.isExpandedAll());
+            invalidateOptionsMenu();
             return true;
         }
         return super.onOptionsItemSelected(item);
