@@ -51,6 +51,43 @@ public class MessageDetailActivity extends AppCompatActivity {
                 sms.setRead(true);
             }
 
+            android.widget.EditText etReplyMessage = findViewById(R.id.etReplyMessageDetail);
+            android.widget.ImageButton btnSendReply = findViewById(R.id.btnSendReplyDetail);
+
+            btnSendReply.setOnClickListener(v -> {
+                String message = etReplyMessage.getText().toString().trim();
+                if (message.isEmpty()) {
+                    return;
+                }
+
+                String recipient = sms.getSender();
+                if (recipient == null || recipient.isEmpty()) {
+                    android.widget.Toast.makeText(this, "Could not determine recipient", android.widget.Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                final String finalRecipient = recipient;
+                btnSendReply.setEnabled(false);
+
+                SmsRepository.sendSms(this, finalRecipient, message, () -> {
+                    runOnUiThread(() -> {
+                        btnSendReply.setEnabled(true);
+                        etReplyMessage.setText("");
+                        android.widget.Toast.makeText(this, "Message sent", android.widget.Toast.LENGTH_SHORT).show();
+                        
+                        // Send broadcast to update the UI dynamically
+                        android.content.Intent refreshIntent = new android.content.Intent("com.vypeensoft.smsmanager.REFRESH_SMS");
+                        refreshIntent.putExtra("sender_number", finalRecipient);
+                        sendBroadcast(refreshIntent);
+                    });
+                }, () -> {
+                    runOnUiThread(() -> {
+                        btnSendReply.setEnabled(true);
+                        android.widget.Toast.makeText(this, "Failed to send message", android.widget.Toast.LENGTH_SHORT).show();
+                    });
+                });
+            });
+
             android.widget.Button btnDelete = findViewById(R.id.btnDeleteDetail);
             btnDelete.setOnClickListener(v -> {
                 boolean confirmDelete = SettingsManager.isConfirmDelete(this);
