@@ -121,7 +121,7 @@ public class SmsRepository {
                                 }
                             }
                             
-                            smsList.add(new SmsModel(id, address, contactName, body, timestamp, isRead, type));
+                            smsList.add(new SmsModel(id, address, contactName, body, timestamp, isRead, type, dateMillis));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

@@ -11,8 +11,9 @@ public class SmsModel implements Serializable {
     private boolean isRead;
     private int type; // 1 for inbox, 2 for sent
     private int groupCount; // Only used in grouped view
+    private long date; // Epoch milliseconds for sorting
 
-    public SmsModel(String id, String sender, String contactName, String body, String timestamp, boolean isRead, int type) {
+    public SmsModel(String id, String sender, String contactName, String body, String timestamp, boolean isRead, int type, long date) {
         this.id = id;
         this.sender = sender;
         this.contactName = contactName;
@@ -21,6 +22,7 @@ public class SmsModel implements Serializable {
         this.isRead = isRead;
         this.type = type;
         this.groupCount = 0;
+        this.date = date;
     }
 
     public String getId() {
@@ -66,4 +68,9 @@ public class SmsModel implements Serializable {
     public void setGroupCount(int groupCount) {
         this.groupCount = groupCount;
     }
+
+    public long getDate() {
+        return date;
+    }
 }
+

@@ -55,6 +55,15 @@ public class SettingsActivity extends AppCompatActivity {
             } catch (Exception e) {}
         });
 
+        androidx.appcompat.widget.SwitchCompat switchSortAscending = findViewById(R.id.switchSortAscending);
+        switchSortAscending.setChecked(settings.optBoolean("sort_ascending", true));
+        switchSortAscending.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            try {
+                settings.put("sort_ascending", isChecked);
+                SettingsManager.saveSettings(this, settings);
+            } catch (Exception e) {}
+        });
+
         android.widget.Button btnOpenSystemSettings = findViewById(R.id.btnOpenSystemSettings);
         btnOpenSystemSettings.setOnClickListener(v -> {
             android.content.Intent intent = new android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);

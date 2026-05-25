@@ -250,6 +250,13 @@ public class GroupedMessagesActivity extends AppCompatActivity {
                     }
                 }
             }
+            boolean sortAscending = SettingsManager.isSortAscending(GroupedMessagesActivity.this);
+            if (sortAscending) {
+                java.util.Collections.sort(filtered, (s1, s2) -> Long.compare(s1.getDate(), s2.getDate()));
+            } else {
+                java.util.Collections.sort(filtered, (s1, s2) -> Long.compare(s2.getDate(), s1.getDate()));
+            }
+
             runOnUiThread(() -> {
                 this.groupedSmsList = filtered;
                 adapter.updateList(filtered);
@@ -265,7 +272,11 @@ public class GroupedMessagesActivity extends AppCompatActivity {
                             senderNumber = filtered.get(0).getSender();
                         }
                     }
-                    rvGroupedSmsList.scrollToPosition(filtered.size() - 1);
+                    if (sortAscending) {
+                        rvGroupedSmsList.scrollToPosition(filtered.size() - 1);
+                    } else {
+                        rvGroupedSmsList.scrollToPosition(0);
+                    }
                 }
             });
         });

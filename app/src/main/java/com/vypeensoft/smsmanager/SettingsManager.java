@@ -57,6 +57,7 @@ public class SettingsManager {
         try {
             settings.put("font_size", 16);
             settings.put("confirm_delete", true);
+            settings.put("sort_ascending", true);
             settings.put("export_path", getDefaultExportPath());
             settings.put("export_format_xml", true);
             settings.put("export_format_json", true);
@@ -74,6 +75,10 @@ public class SettingsManager {
 
     public static boolean isConfirmDelete(Context context) {
         return loadSettings(context).optBoolean("confirm_delete", true);
+    }
+
+    public static boolean isSortAscending(Context context) {
+        return loadSettings(context).optBoolean("sort_ascending", true);
     }
 
     public static String getExportPath(Context context) {
