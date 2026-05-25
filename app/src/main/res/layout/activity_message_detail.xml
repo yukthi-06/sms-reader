@@ -6,13 +6,30 @@
     android:padding="16dp"
     android:background="#FFFFFF">
 
-    <TextView
-        android:id="@+id/tvDetailSender"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="#333333" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvDetailSender"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333" />
+
+        <ImageButton
+            android:id="@+id/btnDeleteDetail"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_delete"
+            android:tint="#E74C3C"
+            android:contentDescription="Delete Message" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvDetailTimestamp"
@@ -74,12 +91,4 @@
             android:contentDescription="Send" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btnDeleteDetail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Delete Message"
-        android:backgroundTint="#E74C3C"
-        android:textColor="#FFFFFF"
-        android:layout_marginTop="8dp" />
 </LinearLayout>

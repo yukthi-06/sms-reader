@@ -88,7 +88,7 @@ public class MessageDetailActivity extends AppCompatActivity {
                 });
             });
 
-            android.widget.Button btnDelete = findViewById(R.id.btnDeleteDetail);
+            android.widget.ImageButton btnDelete = findViewById(R.id.btnDeleteDetail);
             btnDelete.setOnClickListener(v -> {
                 boolean confirmDelete = SettingsManager.isConfirmDelete(this);
 
