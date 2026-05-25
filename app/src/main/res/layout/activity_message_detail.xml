@@ -38,6 +38,42 @@
             android:lineSpacingExtra="4dp" />
     </ScrollView>
 
+    <LinearLayout
+        android:id="@+id/replyContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:background="#FFFFFF"
+        android:elevation="4dp"
+        android:layout_marginTop="16dp">
+
+        <EditText
+            android:id="@+id/etReplyMessageDetail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/search_bg"
+            android:hint="Type a reply..."
+            android:padding="12dp"
+            android:maxLines="4"
+            android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
+            android:textColor="#333333"
+            android:textColorHint="#999999"
+            android:textSize="16sp" />
+
+        <ImageButton
+            android:id="@+id/btnSendReplyDetail"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:layout_gravity="center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_send"
+            android:tint="#2C3E50"
+            android:contentDescription="Send" />
+    </LinearLayout>
+
     <Button
         android:id="@+id/btnDeleteDetail"
         android:layout_width="match_parent"
@@ -45,5 +81,5 @@
         android:text="Delete Message"
         android:backgroundTint="#E74C3C"
         android:textColor="#FFFFFF"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="8dp" />
 </LinearLayout>
