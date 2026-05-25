@@ -46,6 +46,36 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        final int[] currentLines = {settings.optInt("preview_lines", 3)};
+
+        android.widget.TextView tvPreviewLines = findViewById(R.id.tvPreviewLines);
+        android.widget.Button btnDecreasePreviewLines = findViewById(R.id.btnDecreasePreviewLines);
+        android.widget.Button btnIncreasePreviewLines = findViewById(R.id.btnIncreasePreviewLines);
+
+        tvPreviewLines.setText(String.valueOf(currentLines[0]));
+
+        btnDecreasePreviewLines.setOnClickListener(v -> {
+            if (currentLines[0] > 1) { // Minimum 1 line
+                currentLines[0] -= 1;
+                tvPreviewLines.setText(String.valueOf(currentLines[0]));
+                try {
+                    settings.put("preview_lines", currentLines[0]);
+                    SettingsManager.saveSettings(this, settings);
+                } catch (Exception e) {}
+            }
+        });
+
+        btnIncreasePreviewLines.setOnClickListener(v -> {
+            if (currentLines[0] < 10) { // Maximum 10 lines
+                currentLines[0] += 1;
+                tvPreviewLines.setText(String.valueOf(currentLines[0]));
+                try {
+                    settings.put("preview_lines", currentLines[0]);
+                    SettingsManager.saveSettings(this, settings);
+                } catch (Exception e) {}
+            }
+        });
+
         androidx.appcompat.widget.SwitchCompat switchConfirmDelete = findViewById(R.id.switchConfirmDelete);
         switchConfirmDelete.setChecked(settings.optBoolean("confirm_delete", true));
         switchConfirmDelete.setOnCheckedChangeListener((buttonView, isChecked) -> {

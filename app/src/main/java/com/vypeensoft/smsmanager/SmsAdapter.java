@@ -143,7 +143,8 @@ public class SmsAdapter extends RecyclerView.Adapter<SmsAdapter.SmsViewHolder> {
             holder.tvBody.setMaxLines(Integer.MAX_VALUE);
             holder.tvBody.setEllipsize(null);
         } else {
-            holder.tvBody.setMaxLines(3);
+            int previewLines = SettingsManager.getPreviewLines(holder.itemView.getContext());
+            holder.tvBody.setMaxLines(previewLines);
             holder.tvBody.setEllipsize(android.text.TextUtils.TruncateAt.END);
         }
         
