@@ -109,8 +109,14 @@ public class SmsAdapter extends RecyclerView.Adapter<SmsAdapter.SmsViewHolder> {
         String contactName = sms.getContactName();
         boolean isFromContacts = contactName != null && !contactName.isEmpty();
         
-        if (hideSender && isFromContacts) {
-            holder.tvSender.setVisibility(View.GONE);
+        if (hideSender) {
+            holder.tvSender.setVisibility(View.VISIBLE);
+            String html = sms.isSent() ? "<b><font color='#3498DB'>📤 Sent</font></b>" : "<b><font color='#2ECC71'>📩 Received</font></b>";
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                holder.tvSender.setText(android.text.Html.fromHtml(html, android.text.Html.FROM_HTML_MODE_LEGACY));
+            } else {
+                holder.tvSender.setText(android.text.Html.fromHtml(html));
+            }
         } else {
             holder.tvSender.setVisibility(View.VISIBLE);
             
