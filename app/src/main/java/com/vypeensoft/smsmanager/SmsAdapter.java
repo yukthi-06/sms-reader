@@ -110,13 +110,7 @@ public class SmsAdapter extends RecyclerView.Adapter<SmsAdapter.SmsViewHolder> {
         boolean isFromContacts = contactName != null && !contactName.isEmpty();
         
         if (hideSender) {
-            holder.tvSender.setVisibility(View.VISIBLE);
-            String html = sms.isSent() ? "<b><font color='#3498DB'>📤 Sent</font></b>" : "<b><font color='#2ECC71'>📩 Received</font></b>";
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                holder.tvSender.setText(android.text.Html.fromHtml(html, android.text.Html.FROM_HTML_MODE_LEGACY));
-            } else {
-                holder.tvSender.setText(android.text.Html.fromHtml(html));
-            }
+            holder.tvSender.setVisibility(View.GONE);
         } else {
             holder.tvSender.setVisibility(View.VISIBLE);
             
@@ -142,7 +136,18 @@ public class SmsAdapter extends RecyclerView.Adapter<SmsAdapter.SmsViewHolder> {
             }
         }
         
-        holder.tvTimestamp.setText(sms.getTimestamp());
+        String timestampText = sms.getTimestamp();
+        if (hideSender) {
+            String directionHtml = sms.isSent() ? " <font color='#3498DB'>(Sent)</font>" : " <font color='#2ECC71'>(Received)</font>";
+            String fullTimestampHtml = timestampText + directionHtml;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                holder.tvTimestamp.setText(android.text.Html.fromHtml(fullTimestampHtml, android.text.Html.FROM_HTML_MODE_LEGACY));
+            } else {
+                holder.tvTimestamp.setText(android.text.Html.fromHtml(fullTimestampHtml));
+            }
+        } else {
+            holder.tvTimestamp.setText(timestampText);
+        }
         holder.tvBody.setText(sms.getBody());
         
         if (isExpandedAll) {
