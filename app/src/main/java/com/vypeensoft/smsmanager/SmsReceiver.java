@@ -47,6 +47,7 @@ public class SmsReceiver extends BroadcastReceiver {
                 } else {
                     // System wrote it automatically, but we invalidate our cache
                     SmsRepository.clearCache();
+                    SmsRepository.updateAppStateBadge(context);
                 }
 
                 // Send broadcast to update the UI dynamically

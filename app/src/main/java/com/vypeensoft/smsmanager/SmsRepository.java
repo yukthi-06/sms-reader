@@ -150,6 +150,7 @@ public class SmsRepository {
                 values.put("read", 1);
                 Uri uriSms = Uri.parse("content://sms");
                 context.getContentResolver().update(uriSms, values, "_id=" + messageId, null);
+                updateAppStateBadge(context);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -165,6 +166,7 @@ public class SmsRepository {
                 if (rowsDeleted > 0 && onSuccess != null) {
                     onSuccess.run();
                 }
+                updateAppStateBadge(context);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -282,6 +284,7 @@ public class SmsRepository {
             values.put("read", 1); // Sent is read
             values.put("type", 2); // 2 is sent
             context.getContentResolver().insert(Uri.parse("content://sms/sent"), values);
+            updateAppStateBadge(context);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -297,8 +300,32 @@ public class SmsRepository {
             values.put("read", 0); // Unread
             values.put("type", 1); // 1 is inbox
             context.getContentResolver().insert(Uri.parse("content://sms/inbox"), values);
+            updateAppStateBadge(context);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void updateAppStateBadge(Context context) {
+        if (context == null) return;
+        final Context appContext = context.getApplicationContext();
+        new Thread(() -> {
+            try {
+                int unreadCount = 0;
+                Uri uriSms = Uri.parse("content://sms/inbox");
+                try (Cursor cursor = appContext.getContentResolver().query(uriSms, new String[]{"_id"}, "read = 0", null, null)) {
+                    if (cursor != null) {
+                        unreadCount = cursor.getCount();
+                    }
+                }
+                if (unreadCount > 0) {
+                    me.leolin.shortcutbadger.ShortcutBadger.applyCount(appContext, unreadCount);
+                } else {
+                    me.leolin.shortcutbadger.ShortcutBadger.removeCount(appContext);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 }

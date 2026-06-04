@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED &&
             ContextCompat.checkSelfPermission(this, "android.permission.WRITE_SMS") == PackageManager.PERMISSION_GRANTED) {
             loadSms();
+            SmsRepository.updateAppStateBadge(this);
         } else {
             updateVisibility();
         }
@@ -284,6 +285,7 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 allSmsList = smsList;
                 performSearch(); // Re-apply search filter if any, which also calls updateVisibility
+                SmsRepository.updateAppStateBadge(this);
             });
         });
     }
