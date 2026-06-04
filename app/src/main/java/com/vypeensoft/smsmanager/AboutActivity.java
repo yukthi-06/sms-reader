@@ -2,26 +2,32 @@ package com.vypeensoft.smsmanager;
 
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import android.widget.TextView;
 
 public class AboutActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
-        
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("About");
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
 
-        TextView tvBuildDetails = findViewById(R.id.tvBuildDetails);
-        String details = "Build Timestamp: " + BuildConfig.BUILD_TIMESTAMP + "\n" +
-                         "Git SHA: " + BuildConfig.GIT_SHA + "\n" +
-                         "Git SHA Full: " + BuildConfig.GIT_SHA_FULL + "\n" +
-                         "Git Tag: " + BuildConfig.GIT_TAG;
-        tvBuildDetails.setText(details);
+        String buildInfo = 
+                "Timestamp: " + BuildConfig.BUILD_TIMESTAMP + "\n" +
+                "Commit: " + BuildConfig.GIT_SHA + "\n" +
+                "Full SHA: " + BuildConfig.GIT_SHA_FULL + "\n" +
+//                "Tag: " + BuildConfig.GIT_TAG + "\n\n" +
+                getString(R.string.about_description);
+
+        TextView tvBuildInfo = findViewById(R.id.tvBuildInfo);
+        tvBuildInfo.setText(buildInfo);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(R.string.title_about);
+        }
     }
 
     @Override

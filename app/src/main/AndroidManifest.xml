@@ -37,7 +37,8 @@
         <activity android:name=".GroupedMessagesActivity" />
         <activity android:name=".SettingsActivity" />
         <activity android:name=".HelpActivity" />
-        <activity android:name=".AboutActivity" />
+        <activity android:name=".AboutActivity"
+            android:theme="@style/Theme.SmsManager.NoActionBar" />
         <activity android:name=".ExportActivity" />
 
         <receiver android:name=".SmsReceiver"

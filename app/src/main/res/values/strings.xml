@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">SMS Manager</string>
+    <string name="title_about">About SMS Manager</string>
+    <string name="about_description">\nThis app is a powerful utility for reading and managing SMS messages.</string>
 </resources>
