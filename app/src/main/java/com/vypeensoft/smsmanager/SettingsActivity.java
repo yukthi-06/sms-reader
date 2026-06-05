@@ -94,6 +94,42 @@ public class SettingsActivity extends AppCompatActivity {
             } catch (Exception e) {}
         });
 
+        androidx.appcompat.widget.SwitchCompat switchNotificationAudio = findViewById(R.id.switchNotificationAudio);
+        switchNotificationAudio.setChecked(settings.optBoolean("notification_audio", true));
+        switchNotificationAudio.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            try {
+                settings.put("notification_audio", isChecked);
+                SettingsManager.saveSettings(this, settings);
+                if (isChecked) {
+                    checkAndRequestNotificationPermission();
+                }
+            } catch (Exception e) {}
+        });
+
+        androidx.appcompat.widget.SwitchCompat switchNotificationVisual = findViewById(R.id.switchNotificationVisual);
+        switchNotificationVisual.setChecked(settings.optBoolean("notification_visual", true));
+        switchNotificationVisual.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            try {
+                settings.put("notification_visual", isChecked);
+                SettingsManager.saveSettings(this, settings);
+                if (isChecked) {
+                    checkAndRequestNotificationPermission();
+                }
+            } catch (Exception e) {}
+        });
+
+        androidx.appcompat.widget.SwitchCompat switchNotificationPreview = findViewById(R.id.switchNotificationPreview);
+        switchNotificationPreview.setChecked(settings.optBoolean("notification_preview", true));
+        switchNotificationPreview.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            try {
+                settings.put("notification_preview", isChecked);
+                SettingsManager.saveSettings(this, settings);
+                if (isChecked) {
+                    checkAndRequestNotificationPermission();
+                }
+            } catch (Exception e) {}
+        });
+
         android.widget.Button btnOpenSystemSettings = findViewById(R.id.btnOpenSystemSettings);
         btnOpenSystemSettings.setOnClickListener(v -> {
             android.content.Intent intent = new android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -120,6 +156,14 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private void checkAndRequestNotificationPermission() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                androidx.core.app.ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 102);
+            }
+        }
     }
 
     @Override

@@ -63,6 +63,9 @@ public class SettingsManager {
             settings.put("export_format_xml", true);
             settings.put("export_format_json", true);
             settings.put("export_format_csv", true);
+            settings.put("notification_audio", true);
+            settings.put("notification_visual", true);
+            settings.put("notification_preview", true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -100,5 +103,17 @@ public class SettingsManager {
 
     public static boolean isExportCsv(Context context) {
         return loadSettings(context).optBoolean("export_format_csv", true);
+    }
+
+    public static boolean isNotificationAudio(Context context) {
+        return loadSettings(context).optBoolean("notification_audio", true);
+    }
+
+    public static boolean isNotificationVisual(Context context) {
+        return loadSettings(context).optBoolean("notification_visual", true);
+    }
+
+    public static boolean isNotificationPreview(Context context) {
+        return loadSettings(context).optBoolean("notification_preview", true);
     }
 }
