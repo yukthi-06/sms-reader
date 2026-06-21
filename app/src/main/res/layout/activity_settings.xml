@@ -239,7 +239,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="1. Open System Settings\n2. Go to Apps &amp; notifications\n3. Tap on Default apps\n4. Tap on SMS app\n5. Select SMS Reader"
+            android:text="1. Open System Settings\n2. Go to Apps &amp; notifications\n3. Tap on Default apps\n4. Tap on SMS app\n5. Select SMS Manager"
             android:textSize="14sp"
             android:textColor="#555555"
             android:lineSpacingExtra="4dp"
