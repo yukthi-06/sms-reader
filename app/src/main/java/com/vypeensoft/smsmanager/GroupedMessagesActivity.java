@@ -80,6 +80,23 @@ public class GroupedMessagesActivity extends AppCompatActivity {
                 toggleSelection(sms.getId());
             }
 
+            @Override
+            public void onPinClick(SmsModel sms, boolean isPinned) {
+                // Pinning is only supported in MainActivity's individual view,
+                // but we must implement the interface method.
+                // We can optionally support it here too.
+                sms.setPinned(isPinned);
+                java.util.Set<String> pinnedIds = SettingsManager.getPinnedMessages(GroupedMessagesActivity.this);
+                if (isPinned) {
+                    pinnedIds.add(sms.getId());
+                } else {
+                    pinnedIds.remove(sms.getId());
+                }
+                SettingsManager.savePinnedMessages(GroupedMessagesActivity.this, pinnedIds);
+                // Optionally update adapter list or leave as is if no sorting needed in grouped view
+                adapter.notifyDataSetChanged();
+            }
+
             private void performDelete(SmsModel sms) {
                 SmsRepository.deleteSms(GroupedMessagesActivity.this, sms.getId(), () -> {
                     runOnUiThread(() -> {

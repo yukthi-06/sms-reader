@@ -12,6 +12,9 @@ public class SmsModel implements Serializable {
     private int type; // 1 for inbox, 2 for sent
     private int groupCount; // Only used in grouped view
     private long date; // Epoch milliseconds for sorting
+    private boolean isPinned;
+    private boolean isHeader;
+    private String headerTitle;
 
     public SmsModel(String id, String sender, String contactName, String body, String timestamp, boolean isRead, int type, long date) {
         this.id = id;
@@ -23,6 +26,16 @@ public class SmsModel implements Serializable {
         this.type = type;
         this.groupCount = 0;
         this.date = date;
+        this.isPinned = false;
+        this.isHeader = false;
+    }
+
+    // Constructor for Header
+    public static SmsModel createHeader(String headerTitle) {
+        SmsModel model = new SmsModel("", "", "", "", "", true, 0, 0);
+        model.isHeader = true;
+        model.headerTitle = headerTitle;
+        return model;
     }
 
     public String getId() {
@@ -71,6 +84,22 @@ public class SmsModel implements Serializable {
 
     public long getDate() {
         return date;
+    }
+
+    public boolean isPinned() {
+        return isPinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        isPinned = pinned;
+    }
+
+    public boolean isHeader() {
+        return isHeader;
+    }
+
+    public String getHeaderTitle() {
+        return headerTitle;
     }
 }
 

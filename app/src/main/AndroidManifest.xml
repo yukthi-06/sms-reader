@@ -41,6 +41,7 @@
         <activity android:name=".AboutActivity"
             android:theme="@style/Theme.SmsManager.NoActionBar" />
         <activity android:name=".ExportActivity" />
+        <activity android:name=".PinnedMessagesActivity" />
 
         <receiver android:name=".SmsReceiver"
             android:permission="android.permission.BROADCAST_SMS"

@@ -116,4 +116,32 @@ public class SettingsManager {
     public static boolean isNotificationPreview(Context context) {
         return loadSettings(context).optBoolean("notification_preview", true);
     }
+
+    public static java.util.Set<String> getPinnedMessages(Context context) {
+        java.util.Set<String> pinnedIds = new java.util.HashSet<>();
+        org.json.JSONArray array = loadSettings(context).optJSONArray("pinned_messages");
+        if (array != null) {
+            for (int i = 0; i < array.length(); i++) {
+                String id = array.optString(i);
+                if (id != null && !id.isEmpty()) {
+                    pinnedIds.add(id);
+                }
+            }
+        }
+        return pinnedIds;
+    }
+
+    public static void savePinnedMessages(Context context, java.util.Set<String> pinnedIds) {
+        JSONObject settings = loadSettings(context);
+        org.json.JSONArray array = new org.json.JSONArray();
+        for (String id : pinnedIds) {
+            array.put(id);
+        }
+        try {
+            settings.put("pinned_messages", array);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        saveSettings(context, settings);
+    }
 }

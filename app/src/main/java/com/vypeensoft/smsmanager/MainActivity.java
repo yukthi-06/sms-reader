@@ -171,6 +171,19 @@ public class MainActivity extends AppCompatActivity {
                 // Placeholder for multi-select in MainActivity if needed
             }
 
+            @Override
+            public void onPinClick(SmsModel sms, boolean isPinned) {
+                sms.setPinned(isPinned);
+                java.util.Set<String> pinnedIds = SettingsManager.getPinnedMessages(MainActivity.this);
+                if (isPinned) {
+                    pinnedIds.add(sms.getId());
+                } else {
+                    pinnedIds.remove(sms.getId());
+                }
+                SettingsManager.savePinnedMessages(MainActivity.this, pinnedIds);
+                performSearch(); // Refresh list to reflect pinned status and reorder
+            }
+
             private void performDelete(SmsModel sms) {
                 SmsRepository.deleteSms(MainActivity.this, sms.getId(), () -> {
                     runOnUiThread(() -> {
@@ -227,6 +240,11 @@ public class MainActivity extends AppCompatActivity {
 
         findViewById(R.id.fabCompose).setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, ComposeSmsActivity.class));
+        });
+
+        View cvPinnedMessages = findViewById(R.id.cvPinnedMessages);
+        cvPinnedMessages.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, PinnedMessagesActivity.class));
         });
     }
 
@@ -292,6 +310,12 @@ public class MainActivity extends AppCompatActivity {
     private void loadSms() {
         SmsRepository.getAllSms(getContentResolver(), smsList -> {
             runOnUiThread(() -> {
+                java.util.Set<String> pinnedIds = SettingsManager.getPinnedMessages(this);
+                for (SmsModel sms : smsList) {
+                    if (pinnedIds.contains(sms.getId())) {
+                        sms.setPinned(true);
+                    }
+                }
                 allSmsList = smsList;
                 performSearch(); // Re-apply search filter if any, which also calls updateVisibility
                 SmsRepository.updateAppStateBadge(this);

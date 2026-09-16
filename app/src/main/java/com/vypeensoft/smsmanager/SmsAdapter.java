@@ -15,6 +15,7 @@ public class SmsAdapter extends RecyclerView.Adapter<SmsAdapter.SmsViewHolder> {
         void onItemClick(SmsModel sms);
         void onDeleteClick(SmsModel sms);
         void onItemLongClick(SmsModel sms);
+        void onPinClick(SmsModel sms, boolean isPinned);
     }
 
     private List<SmsModel> smsList;
@@ -206,6 +207,21 @@ public class SmsAdapter extends RecyclerView.Adapter<SmsAdapter.SmsViewHolder> {
                 listener.onDeleteClick(sms);
             }
         });
+
+        holder.btnPin.setVisibility(isSelectionMode || showTrimmedSender ? View.GONE : View.VISIBLE);
+        if (sms.isPinned()) {
+            holder.btnPin.setImageResource(android.R.drawable.btn_star_big_on);
+            holder.btnPin.setColorFilter(android.graphics.Color.parseColor("#F1C40F")); // Yellow/Gold
+        } else {
+            holder.btnPin.setImageResource(android.R.drawable.btn_star_big_off);
+            holder.btnPin.setColorFilter(android.graphics.Color.parseColor("#BDC3C7")); // Gray
+        }
+
+        holder.btnPin.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onPinClick(sms, !sms.isPinned());
+            }
+        });
     }
 
     @Override
@@ -215,7 +231,7 @@ public class SmsAdapter extends RecyclerView.Adapter<SmsAdapter.SmsViewHolder> {
 
     public static class SmsViewHolder extends RecyclerView.ViewHolder {
         TextView tvSender, tvTimestamp, tvBody;
-        android.widget.ImageButton btnDelete;
+        android.widget.ImageButton btnDelete, btnPin;
 
         public SmsViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -223,6 +239,7 @@ public class SmsAdapter extends RecyclerView.Adapter<SmsAdapter.SmsViewHolder> {
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
             tvBody = itemView.findViewById(R.id.tvBody);
             btnDelete = itemView.findViewById(R.id.btnDelete);
+            btnPin = itemView.findViewById(R.id.btnPin);
         }
     }
 }
