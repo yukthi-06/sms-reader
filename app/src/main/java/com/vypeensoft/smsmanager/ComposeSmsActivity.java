@@ -68,6 +68,30 @@ public class ComposeSmsActivity extends AppCompatActivity {
                 });
             });
         });
+
+        handleIncomingIntent();
+    }
+
+    private void handleIncomingIntent() {
+        Intent intent = getIntent();
+        if (intent != null) {
+            Uri data = intent.getData();
+            if (data != null && data.getSchemeSpecificPart() != null) {
+                String number = data.getSchemeSpecificPart();
+                // Scheme specific part might contain queries like ?body=... 
+                // but usually for smsto: it's just the number. Let's just use it or decode it.
+                if (number.contains("?")) {
+                    number = number.substring(0, number.indexOf('?'));
+                }
+                etRecipient.setText(number);
+            }
+
+            if (intent.hasExtra("sms_body")) {
+                etMessageBody.setText(intent.getStringExtra("sms_body"));
+            } else if (intent.hasExtra(Intent.EXTRA_TEXT)) {
+                etMessageBody.setText(intent.getStringExtra(Intent.EXTRA_TEXT));
+            }
+        }
     }
 
     @Override
